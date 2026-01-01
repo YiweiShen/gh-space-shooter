@@ -51,84 +51,57 @@ class Ship(Drawable):
             self.shoot_cooldown -= 1
 
     def draw(self, draw: ImageDraw.ImageDraw, context: "RenderContext") -> None:
-        """Draw the ship with gradient effects and detailed design."""
-        # Ship stays below the grid at a fixed vertical position
+        """Draw a simple Galaga-style ship."""
         x, y = context.get_cell_position(self.x, SHIP_POSITION_Y)
 
         # Calculate ship dimensions
         center_x = x + context.cell_size // 2
-        width = context.cell_size
         height = context.cell_size
+        wing_width = 8
 
-        # Extract base color components
-        r, g, b = context.ship_color
-
-        # Draw engine glow (bottom, brightest)
-        glow_color = (min(r + 40, 255), min(g + 40, 255), min(b + 60, 255))
-        draw.ellipse(
-            [center_x - 3, y + height - 4, center_x + 3, y + height + 2],
-            fill=glow_color
-        )
-
-        # Draw wings (darker shade)
-        wing_color = (max(r - 30, 0), max(g - 30, 0), max(b - 30, 0))
-        # Left wing
+        # Draw left wing
         draw.polygon(
             [
-                (center_x - 2, y + height * 0.4),
-                (x - 2, y + height * 0.7),
-                (x + 2, y + height * 0.8),
+                (center_x - 2, y + height * 0.5),
+                (center_x - wing_width, y + height * 0.8),
+                (center_x - wing_width, y + height * 1),
+                (center_x - 2, y + height * 0.7),
             ],
-            fill=wing_color
+            fill=(*context.ship_color, 128)
         )
-        # Right wing
-        draw.polygon(
+        draw.rectangle(
             [
-                (center_x + 2, y + height * 0.4),
-                (x + width + 2, y + height * 0.7),
-                (x + width - 2, y + height * 0.8),
-            ],
-            fill=wing_color
-        )
-
-        # Draw main body with gradient (3 segments for smooth gradient)
-        # Front segment (lightest)
-        front_color = (min(r + 30, 255), min(g + 30, 255), min(b + 40, 255))
-        draw.polygon(
-            [
-                (center_x, y),  # Nose
-                (center_x - 4, y + height * 0.35),
-                (center_x + 4, y + height * 0.35),
-            ],
-            fill=front_color
-        )
-
-        # Middle segment (base color)
-        draw.polygon(
-            [
-                (center_x - 4, y + height * 0.35),
-                (center_x + 4, y + height * 0.35),
-                (center_x - 5, y + height * 0.7),
-                (center_x + 5, y + height * 0.7),
+                center_x - wing_width - 1, y + height * 0.5,
+                center_x - wing_width, y + height * 1, 
             ],
             fill=context.ship_color
         )
 
-        # Back segment (darker)
-        back_color = (max(r - 20, 0), max(g - 20, 0), max(b - 20, 0))
+        # Draw right wing
         draw.polygon(
             [
-                (center_x - 5, y + height * 0.7),
-                (center_x + 5, y + height * 0.7),
-                (center_x - 4, y + height),
-                (center_x + 4, y + height),
+                (center_x + 2, y + height * 0.5),
+                (center_x + wing_width, y + height * 0.8),
+                (center_x + wing_width, y + height * 1),
+                (center_x + 2, y + height * 0.7),
             ],
-            fill=back_color
+            fill=(*context.ship_color, 128)
+        )
+        draw.rectangle(
+            [
+                center_x + wing_width, y + height * 0.5, 
+                center_x + wing_width + 1, y + height * 1
+            ],
+            fill=context.ship_color
         )
 
-        # Draw cockpit (bright accent)
-        cockpit_color = (min(r + 80, 255), min(g + 100, 255), min(b + 120, 255))
-        draw.ellipse(
-            [center_x - 2, y + height * 0.25, center_x + 2, y + height * 0.45],
-            fill=cockpit_color
+
+        draw.polygon(
+            [
+                (center_x, y),
+                (center_x - 3, y + height * 0.7),
+                (center_x, y + height),
+                (center_x + 3, y + height * 0.7),
+            ],
+            fill=context.ship_color
         )

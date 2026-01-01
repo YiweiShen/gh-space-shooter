@@ -1,5 +1,7 @@
 """Explosion effects for bullet hits and enemy destruction."""
 
+import math
+import random
 from typing import TYPE_CHECKING, Literal
 
 from PIL import ImageDraw
@@ -31,6 +33,8 @@ class Explosion(Drawable):
         self.max_frames = 6 if size == "small" else 20
         self.max_radius = 10 if size == "small" else 20
         self.particle_count = 4 if size == "small" else 8
+        # Generate random angles for each particle
+        self.particle_angles = [random.uniform(0, 2 * math.pi) for _ in range(self.particle_count)]
 
     def animate(self) -> None:
         """Progress the explosion animation and remove when complete."""
@@ -49,13 +53,14 @@ class Explosion(Drawable):
         center_x += context.cell_size // 2
         center_y += context.cell_size // 2
 
-        # Draw expanding particles in a circle pattern
+        # Draw expanding particles in random directions
         for i in range(self.particle_count):
             distance = progress * self.max_radius
+            angle = self.particle_angles[i]
 
-            # Particle position
-            px = int(center_x + distance * (i % 2 * 2 - 1))  # Alternate left/right
-            py = int(center_y + distance * ((i // 2) % 2 * 2 - 1))  # Alternate up/down
+            # Particle position using random angle
+            px = int(center_x + distance * math.cos(angle))
+            py = int(center_y + distance * math.sin(angle))
 
             # Particle size decreases as it expands
             particle_size = int((1 - progress * 0.5) * 3) + 1

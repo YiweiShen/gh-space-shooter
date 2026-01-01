@@ -47,11 +47,12 @@ class Enemy(Drawable):
         pass
 
     def draw(self, draw: ImageDraw.ImageDraw, context: "RenderContext") -> None:
-        """Draw the enemy at its position."""
+        """Draw the enemy at its position with rounded corners."""
         x, y = context.get_cell_position(self.x, self.y)
         color = context.enemy_colors.get(self.health, context.enemy_colors[1])
 
-        draw.rectangle(
+        draw.rounded_rectangle(
             [x, y, x + context.cell_size, y + context.cell_size],
+            radius=2,
             fill=color,
         )

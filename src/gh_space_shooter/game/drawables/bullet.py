@@ -52,7 +52,7 @@ class Bullet(Drawable):
     def draw(self, draw: ImageDraw.ImageDraw, context: "RenderContext") -> None:
         """Draw the bullet with trailing tail effect."""
 
-        trail_num = 6
+        trail_num = 3
         for i in range(trail_num):
             trail_y = self.y + (i + 1) * BULLET_SPEED
             fade_factor = (i + 1) / trail_num / 2
@@ -75,7 +75,7 @@ class Bullet(Drawable):
         x += context.cell_size // 2
         y += context.cell_size // 2
 
-        r_x = 1 + offset
+        r_x = 0.5 + offset
         r_y = 4 + offset
         draw.rectangle(
             [x - r_x, y - r_y, x + r_x, y + r_y],
