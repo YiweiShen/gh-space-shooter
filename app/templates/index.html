@@ -184,6 +184,20 @@
             }
         }
 
+        /* ==========================================================================
+           Action Buttons
+           ========================================================================== */
+        .actions {
+            main[data-state="error"] &,
+            main[data-state="select"] & {
+                display: none;
+            }
+            main[data-state="generating"] & {
+                opacity: 0.6;
+                pointer-events: none;
+            }
+        }
+
         .btn {
             width: 100%;
             padding: var(--spacing-sm) 0;
@@ -197,24 +211,33 @@
             transition: background var(--transition-fast);
             box-sizing: border-box;
 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+
             &:hover {
                 background: var(--color-btn-primary-hover);
             }
 
-            main[data-state="generation"] &#submitBtn {
+            main[data-state="generating"] &#submitBtn {
                 opacity: 0.6;
                 pointer-events: none;
             }
         }
 
-        #gifImageDownload {
-            main:not([data-state="success"]) & {
-                opacity: 0.6;
-                pointer-events: none;
+        .btn--secondary {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border-default);
+            color: var(--color-text-primary);
 
-                .btn {
-                    pointer-events: none;
-                }
+            &:hover {
+                background: var(--color-bg-skeleton);
+            }
+
+            & svg {
+                width: 18px;
+                height: 18px;
             }
         }
 
@@ -227,7 +250,7 @@
             border-radius: var(--radius-md);
             overflow: hidden;
             
-            main[data-state="generation"] & {
+            main[data-state="generating"] & {
                 display: block;
             }
 
@@ -328,7 +351,7 @@
                 </div>
             </div>
             
-            <button class="btn" id="submitBtn" onclick="handleGeneration()">Generate GIF</button>
+            <button class="btn" id="submitBtn" onclick="generationHandler()">Generate GIF</button>
 
             <div id="skeleton">
                 <span>Generating your GIF... This may take a moment.</span>
@@ -336,10 +359,16 @@
             <div id="error">Failed to generate GIF</div>
             <img id="gifImage" alt="Space Shooter GIF">
             
-            <div class="row">
+            <div class="row actions">
                 <a id="gifImageDownload" download>
                     <button class="btn">Download GIF</button>
                 </a>
+                <button class="btn btn--secondary" onclick="shareHandler()">
+                    Share
+                    <svg viewBox="0 0 30 30" width="24" height="24" fill="currentColor">
+                        <path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/>
+                    </svg>
+                </button>
             </div>
 
         </div>
@@ -351,13 +380,17 @@
         const error = document.getElementById('error');
         const downloadLink = document.getElementById('gifImageDownload');
 
-        async function handleGeneration() {
+        let currentBlob = null;
+        let currentUsername = '';
+
+        async function generationHandler() {
             const username = document.getElementById('username').value.trim();
             const strategy = document.getElementById('strategy').value;
 
             if (!username) return;
 
-            main.dataset.state = 'generation';
+            main.dataset.state = 'generating';
+            currentUsername = username;
 
             try {
                 const response = await fetch(`/api/generate?username=${encodeURIComponent(username)}&strategy=${encodeURIComponent(strategy)}`);
@@ -367,8 +400,8 @@
                     throw new Error(data.detail || 'Failed to generate GIF');
                 }
 
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
+                currentBlob = await response.blob();
+                const url = URL.createObjectURL(currentBlob);
 
                 gifImage.src = url;
                 downloadLink.href = url;
@@ -377,7 +410,20 @@
             } catch (err) {
                 error.textContent = err.message;
                 main.dataset.state = 'error';
-            } finally {
+            }
+        }
+
+        async function shareHandler() {
+            if (!currentBlob) return;
+
+            const shareData = {
+                title: 'GitHub Space Shooter',
+                text: `Check out my GitHub contribution graph as a space shooter!`,
+                files: [new File([currentBlob], `${currentUsername}-space-shooter.gif`, { type: 'image/gif' })]
+            };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
             }
         }
     </script>
