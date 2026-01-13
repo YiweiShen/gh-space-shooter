@@ -40,12 +40,6 @@ def generate_gif(username: str, strategy: str, token: str) -> BytesIO:
     animator = Animator(data, strat, fps=25, watermark=True)
     return animator.generate_gif(maxFrame=250)
 
-
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    # /vercel.svg is automatically served when included in the public/** directory.
-    return RedirectResponse("/vercel.svg", status_code=307)
-
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     """Serve the main page."""
