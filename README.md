@@ -6,6 +6,10 @@ Transform your GitHub contribution graph into an epic space shooter game!
 
 ## Usage
 
+### Onetime Generation
+
+A [web interface](https://gh-space-shooter.kiyo-n-zane.com) is available for on-demand GIF generation without installing anything locally. 
+
 ### GitHub Action
 
 Automatically update your game GIF daily using GitHub Actions! Add this workflow to your repository at `.github/workflows/update-game.yml`:

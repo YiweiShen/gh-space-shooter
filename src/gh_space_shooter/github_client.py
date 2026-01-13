@@ -122,7 +122,7 @@ class GitHubClient:
         if "errors" in data:
             errors = data["errors"]
             error_messages = [error.get("message", str(error)) for error in errors]
-            raise GitHubAPIError(f"GraphQL errors: {', '.join(error_messages)}")
+            raise GitHubAPIError(', '.join(error_messages))
 
         # Check if user exists
         if not data.get("data", {}).get("user"):

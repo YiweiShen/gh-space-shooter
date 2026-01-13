@@ -22,6 +22,9 @@ uv run pytest tests/test_strategies.py -v
 
 # Run a specific test
 uv run pytest tests/test_strategies.py::test_column_strategy -v
+
+# Run the web app (from app/ directory)
+uv run --project gh-space-shooter-app uvicorn main:app
 ```
 
 ## Environment Setup
@@ -36,7 +39,7 @@ export GH_TOKEN=your_token_here
 
 **Current main usage**: GitHub Action that automatically updates a game GIF in user repositories daily (see `.github/workflows/` for the action definition).
 
-**Planned**: Wrap this into a Python webapp for on-demand GIF generation.
+**Web App**: A FastAPI-based web application is available in the `app/` directory for on-demand GIF generation. See `app/README.md` for details.
 
 ## Architecture Overview
 
