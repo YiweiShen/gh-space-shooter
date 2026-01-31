@@ -1,26 +1,18 @@
-# gh-space-shooter 🚀
+# GitHub Space Shooter
 
-Transform your GitHub contribution graph into an epic space shooter game! 
+Transform your GitHub contribution graph into an animated space shooter game GIF for your profile README.
 
-![Example Game](example.gif)
+## Quick Start
 
-## Usage
-
-### Onetime Generation
-
-A [web interface](https://gh-space-shooter.kiyo-n-zane.com) is available for on-demand GIF generation without installing anything locally. 
-
-### GitHub Action
-
-Automatically update your game GIF daily using GitHub Actions! Add this workflow to your repository at `.github/workflows/update-game.yml`:
+Add this workflow to your repository at `.github/workflows/space-shooter.yml`:
 
 ```yaml
 name: Update Space Shooter Game
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
-  workflow_dispatch:  # Allow manual trigger
+    - cron: '0 0 * * *' # Daily at midnight UTC
+  workflow_dispatch: # Manual trigger
 
 permissions:
   contents: write
@@ -34,132 +26,101 @@ jobs:
       - uses: czl9707/gh-space-shooter@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          output-path: 'game.gif'
-          strategy: 'random'
 ```
 
 Then display it in your README:
+
 ```markdown
-![My GitHub Game](game.gif)
+![My GitHub Game](gh-space-shooter.gif)
 ```
 
-**Action Inputs:**
-- `github-token` (required): GitHub token for fetching contributions
-- `username` (optional): Username to generate game for (defaults to repo owner)
-- `output-path` (optional): Where to save the GIF (default: `gh-space-shooter.gif`)
-- `strategy` (optional): Attack pattern - `column`, `row`, or `random` (default: `random`)
-- `fps` (optional): Frames per second for the animation (default: `40`)
-- `commit-message` (optional): Commit message for the update
+## Inputs
 
-### From PyPI
+| Input            | Description                                          | Required | Default                         |
+| ---------------- | ---------------------------------------------------- | -------- | ------------------------------- |
+| `github-token`   | GitHub token for fetching contributions              | Yes      | -                               |
+| `username`       | GitHub username to generate game for                 | No       | Repository owner                |
+| `output-path`    | Where to save the GIF                                | No       | `gh-space-shooter.gif`          |
+| `strategy`       | Enemy clearing pattern: `column`, `row`, or `random` | No       | `random`                        |
+| `fps`            | Generation FPS (higher = smoother)                   | No       | `40`                            |
+| `output-fps`     | Output FPS after optimization (lower = smaller file) | No       | `10`                            |
+| `max-colors`     | Max colors in palette (lower = smaller file)         | No       | `64`                            |
+| `commit`         | Auto-commit the generated GIF                        | No       | `true`                          |
+| `commit-message` | Commit message                                       | No       | `Update space shooter game GIF` |
+
+## Outputs
+
+| Output     | Description                        |
+| ---------- | ---------------------------------- |
+| `gif-path` | Path to the generated GIF          |
+| `gif-size` | Size of the generated GIF in bytes |
+
+## Examples
+
+### Basic Usage
+
+```yaml
+- uses: czl9707/gh-space-shooter@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Custom Strategy and Output
+
+```yaml
+- uses: czl9707/gh-space-shooter@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    output-path: 'assets/game.gif'
+    strategy: 'column'
+```
+
+### Smaller File Size
+
+```yaml
+- uses: czl9707/gh-space-shooter@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    output-fps: '8'
+    max-colors: '32'
+```
+
+### Without Auto-Commit
+
+```yaml
+- uses: czl9707/gh-space-shooter@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    commit: 'false'
+
+- name: Custom commit logic
+  run: |
+    git add gh-space-shooter.gif
+    git commit -m "Custom message"
+    git push
+```
+
+### Generate for Another User
+
+```yaml
+- uses: czl9707/gh-space-shooter@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    username: 'torvalds'
+```
+
+## CLI Usage
+
+You can also use this as a CLI tool:
 
 ```bash
 pip install gh-space-shooter
-```
 
-### From Source
+# Set your GitHub token
+export GH_TOKEN=your_token_here
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/gh-space-shooter.git
-cd gh-space-shooter
-
-# Install with uv
-uv sync
-
-# Or with pip
-pip install -e .
-```
-
-## Setup
-
-1. Create a GitHub Personal Access Token:
-   - Go to https://github.com/settings/tokens
-   - Click "Generate new token (classic)"
-   - Select scopes: `read:user`
-   - Copy the generated token
-
-2. Set up your environment:
-   ```bash
-   # Copy the example env file
-   touch .env
-   echo "GH_TOKEN=your_token_here" >> .env
-   ```
-
-   Alternatively, export the token directly:
-   ```bash
-   export GH_TOKEN=your_token_here
-   ```
-
-## Usage
-
-### Generate Your Game GIF
-
-Transform your GitHub contributions into an epic space shooter!
-
-```bash
-# Basic usage - generates username-gh-space-shooter.gif
-gh-space-shooter <username>
-
-# Examples
-gh-space-shooter torvalds
-gh-space-shooter octocat
-
-# Specify custom output filename
-gh-space-shooter torvalds --output my-epic-game.gif
-gh-space-shooter torvalds -o my-game.gif
-
-# Choose enemy attack strategy
-gh-space-shooter torvalds --strategy row      # Enemies attack in rows
-gh-space-shooter torvalds -s random           # Random chaos (default)
-
-# Adjust animation frame rate
-gh-space-shooter torvalds --fps 25            # Lower Frame rate, Smaller file size
-gh-space-shooter torvalds --fps 40            # Default Frame rate, Larger file size
-
-# Stop the animation earlier
-gh-space-shooter torvalds --max-frame 200     # Stop after 200 frames
-```
-
-This creates an animated GIF showing:
-- Your contribution graph as enemies (more contributions = stronger enemies)
-- A Galaga-style spaceship battling through your coding history
-- Enemy attack patterns based on your chosen strategy
-- Smooth animations with randomized particle effects
-- Your contribution stats displayed in the console
-
-### Advanced Options
-
-```bash
-# Save raw contribution data to JSON
-gh-space-shooter torvalds --raw-output data.json
-
-# Load from previously saved JSON (saves API rate limits)
-gh-space-shooter --raw-input data.json --output game.gif
-
-# Combine options
-gh-space-shooter torvalds -o game.gif -ro data.json -s column
-```
-
-### Data Format
-
-When saved to JSON, the data includes:
-```json
-{
-  "username": "torvalds",
-  "total_contributions": 1234,
-  "weeks": [
-    {
-      "days": [
-        {
-          "date": "2024-01-01",
-          "count": 5,
-          "level": 2
-        }
-      ]
-    }
-  ]
-}
+# Generate GIF
+gh-space-shooter <username> --output game.gif
 ```
 
 ## License
