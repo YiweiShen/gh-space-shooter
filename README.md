@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: YiweiShen/gh-space-shooter@v1
+      - uses: YiweiShen/gh-space-shooter@v1.0.5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
